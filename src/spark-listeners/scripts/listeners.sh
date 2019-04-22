@@ -16,6 +16,7 @@ sed -i 's/log4j.rootCategory=.*/&, logAnalyticsAppender/g' /databricks/spark/dbc
 tee -a /databricks/spark/dbconf/log4j/executor/log4j.properties << EOF
 # logAnalytics
 log4j.appender.logAnalyticsAppender=com.microsoft.pnp.logging.loganalytics.LogAnalyticsAppender
+log4j.appender.logAnalyticsAppender.filter.spark=com.microsoft.pnp.logging.SparkPropertyEnricher
 EOF
 echo "END: Updating Executor log4j properties file with Log analytics appender"
 
@@ -24,8 +25,25 @@ sed -i 's/log4j.rootCategory=.*/&, logAnalyticsAppender/g' /databricks/spark/dbc
 tee -a /databricks/spark/dbconf/log4j/driver/log4j.properties << EOF
 # logAnalytics
 log4j.appender.logAnalyticsAppender=com.microsoft.pnp.logging.loganalytics.LogAnalyticsAppender
+log4j.appender.logAnalyticsAppender.filter.spark=com.microsoft.pnp.logging.SparkPropertyEnricher
 EOF
 echo "END: Updating Driver log4j properties file with Log analytics appender"
 
-# Promote the DB_CLUSTER_ID into the environment so we can access it later.
-echo CLUSTER_ID=$DB_CLUSTER_ID >> /etc/environment
+# Location of the driver configuration defaults file
+driver_conf="$DB_HOME/driver/conf/00-custom-spark-driver-defaults.conf"
+
+cat << EOF > $driver_conf
+[driver] {
+    "spark.metrics.namespace" = "${DB_CLUSTER_ID}"
+    "spark.extraListeners" = "com.databricks.backend.daemon.driver.DBCEventLoggingListener,org.apache.spark.listeners.UnifiedSparkListener"
+    "spark.unifiedListener.sink" = "org.apache.spark.listeners.sink.loganalytics.LogAnalyticsListenerSink"
+}
+EOF
+
+# Uncomment the lines below and replace the placeholders with your Log Analytics Workspace information
+# to allow all clusters to use the same Log Analytics Workspace
+tee -a /databricks/spark/conf/spark-env.sh << EOF
+export DB_CLUSTER_ID=$DB_CLUSTER_ID
+#export LOG_ANALYTICS_WORKSPACE_ID=
+#export LOG_ANALYTICS_WORKSPACE_KEY=
+EOF
