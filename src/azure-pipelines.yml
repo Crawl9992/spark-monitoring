@@ -15,6 +15,7 @@ steps:
     STAGE_DIR=./src
     echo "Copying listener jar"
     cp -f "$STAGE_DIR/spark-listeners/target/spark-listeners-1.0-SNAPSHOT.jar" "$STAGE_DIR/monitoring-staging" || { echo "Error copying file"; exit 1;}
+    ls "$STAGE_DIR/monitoring-staging"
   workingDirectory: $(build.sourcesDirectory)
   displayName: Copy Files to Staging Directory
   failOnStderr: true
@@ -27,7 +28,7 @@ steps:
     Save-Module -Name azure.databricks.cicd.tools -RequiredVersion 1.1.13 -Path ./psmodules
     Import-Module ./psmodules/azure.databricks.cicd.tools/1.1.13/azure.databricks.cicd.Tools.psm1
     $targetFolder = "/databricks/monitoring-staging"
-    $parentFolder = "./src/monitoring-staging/"
+    $parentFolder = "/src/monitoring-staging/"
     Write-Host "Source Folder Location - " $parentFolder
     Add-DatabricksDBFSFile -BearerToken $env:DatabricksToken -Region $env:DatabricksRegion -LocalRootFolder $parentFolder -FilePattern *.* -TargetLocation $targetFolder
     Write-Host "Target Folder - " $targetFolder
