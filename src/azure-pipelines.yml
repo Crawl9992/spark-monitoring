@@ -16,13 +16,13 @@ steps:
     Save-Module -Name azure.databricks.cicd.tools -RequiredVersion 1.1.13 -Path ./psmodules
     Import-Module ./psmodules/azure.databricks.cicd.tools/1.1.13/azure.databricks.cicd.Tools.psm1
     $parentFolder = "./src/monitoring-staging/"
+    Write-Host "Source Folder Location - " $parentFolder
     New-Item -ItemType Directory -Force -Path $parentFolder | out-null
     Copy-Item "./src/spark-listeners/scripts/listeners.sh" -Destination $parentFolder -Force
     Copy-Item "./src/spark-listeners/scripts/metrics.properties" -Destination $parentFolder -Force
     Copy-Item "./src/spark-listeners/target/spark-listeners-1.0-SNAPSHOT.jar" -Destination $parentFolder -Force
     Copy-Item "./src/spark-listeners-loganalytics/target/spark-listeners-loganalytics-1.0-SNAPSHOT.jar" -Destination $parentFolder -Force
     Get-ChildItem -Path $parentFolder
-    Write-Host "Source Folder Location - " $parentFolder
     $targetFolder = "/databricks/monitoring-staging"
     Add-DatabricksDBFSFile -BearerToken $env:DatabricksToken -Region $env:DatabricksRegion -LocalRootFolder $parentFolder -FilePattern *.* -TargetLocation $targetFolder
     Write-Host "Target Folder - " $targetFolder
