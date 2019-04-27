@@ -12,7 +12,7 @@ steps:
 
 - bash: |
     #!/bin/bash
-    STAGE_DIR=./src
+    STAGE_DIR=/src
     echo "Copying listener jar"
     cp -f "$STAGE_DIR/spark-listeners/target/spark-listeners-1.0-SNAPSHOT.jar" "$STAGE_DIR/monitoring-staging" || { echo "Error copying file"; exit 1;}
     dir "$STAGE_DIR/monitoring-staging"
