@@ -23,8 +23,8 @@ steps:
     Copy-Item "./src/spark-listeners-loganalytics/target/spark-listeners-loganalytics-1.0-SNAPSHOT.jar" -Destination $parentFolder -Force
     Get-ChildItem -Path $parentFolder
     Write-Host "Source Folder Location - " $parentFolder
-    Add-DatabricksDBFSFile -BearerToken $env:DatabricksToken -Region $env:DatabricksRegion -LocalRootFolder $parentFolder -FilePattern *.* -TargetLocation $targetFolder
     $targetFolder = "/databricks/monitoring-staging"
+    Add-DatabricksDBFSFile -BearerToken $env:DatabricksToken -Region $env:DatabricksRegion -LocalRootFolder $parentFolder -FilePattern *.* -TargetLocation $targetFolder
     Write-Host "Target Folder - " $targetFolder
     Write-Host (Get-DatabricksDBFSFolder -BearerToken $env:DatabricksToken -Region $env:DatabricksRegion -Path $targetFolder)
   displayName: Copy Package to Databricks
