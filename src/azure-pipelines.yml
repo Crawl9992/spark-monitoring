@@ -8,7 +8,7 @@ steps:
 # Build with Apache Maven
 - task: Maven@3
   inputs:
-    #mavenPomFile: '/src/pom.xml' 
+    mavenPomFile: '$(build.sourcesDirectory)/src/pom.xml' 
     #goals: 'package' # Optional
     #options: # Optional
     #publishJUnitResults: true 
